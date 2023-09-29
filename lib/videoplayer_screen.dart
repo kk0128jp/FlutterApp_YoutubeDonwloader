@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
+import 'progress_text.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final VideoPlayerController controller;
@@ -39,23 +40,45 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       appBar: AppBar(
         title: const Text('Player'),
       ),
-      body: Center(
-        child: _controller.value.isInitialized ? AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
-        ) : Container(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          setState(() {
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              _controller.play();
-            }
-          })
-        },
-        child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _controller.value.isInitialized ? AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: VideoPlayer(_controller),
+          ) : Container(),
+          VideoProgressIndicator(
+              _controller,
+              allowScrubbing: true
+          ),
+          ProgressText(controller: _controller),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                  onPressed: () => {
+                    // 動画を最初から再生
+                    _controller.seekTo(Duration.zero).then((_) => _controller.play())
+                  },
+                  icon: Icon(Icons.refresh),
+              ),
+              IconButton(
+                  onPressed: () => {
+                    // 動画を再生
+                    _controller.play()
+                  },
+                  icon: Icon(Icons.play_arrow),
+              ),
+              IconButton(
+                  onPressed: () => {
+                    // 動画を一時停止
+                    _controller.pause()
+                  },
+                  icon: Icon(Icons.pause),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
