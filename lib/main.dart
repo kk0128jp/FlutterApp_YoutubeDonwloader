@@ -29,9 +29,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  List<Widget> _pages = [
+  final List<Widget> _pages = [
     DownloadPage(),
-    VideoListPage(),
+    const VideoListPage(),
   ];
 
   @override
