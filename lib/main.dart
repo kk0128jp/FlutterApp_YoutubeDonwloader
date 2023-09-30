@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'videolist.dart';
 import 'download.dart';
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        //primaryColor: Colors.white,
       ),
       home: const HomePage(),
     );
@@ -39,13 +40,22 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.download),
+              icon: Icon(
+                  Icons.download,
+                  color: Colors.red,
+                  size: 30.0,
+              ),
               label: 'Download',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.video_collection_outlined),
+            icon: Icon(
+                Icons.video_collection_outlined,
+                color: Colors.red,
+                size: 30.0,
+            ),
             label: 'Videos',
           ),
         ],

@@ -13,25 +13,74 @@ class DownloadPage extends StatefulWidget {
 
 class _DownloadPageState extends State<DownloadPage> {
   String url = '';
+  String msg = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Download'),
+        title: const Text(
+            'Download',
+            style: TextStyle(
+              fontFamily: "Robot",
+              color: Colors.black,
+            ),
+        ),
+        elevation: 2.0,
+        backgroundColor: Colors.white,
       ),
       body: Center(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const Text('Youtube URL'),
-            TextField(
-              onChanged: (value) {
-                url  = value.toString();
-              },
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                    Icons.play_circle_filled,
+                    size: 30.0,
+                    color: Colors.red,
+                ),
+                Padding(padding: EdgeInsets.only(right: 10.0)),
+                Text(
+                  'Youtube DLer',
+                  style: TextStyle(
+                    fontSize: 28.0,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Robot",
+                  ),
+                ),
+              ],
             ),
+            const Padding(padding: EdgeInsets.only(bottom: 10.0)),
+            SizedBox(
+              width: 350,
+              child: TextField(
+                decoration: const InputDecoration(
+                    hintText: 'Youtube URL'
+                ),
+                onChanged: (value) {
+                  url  = value.toString();
+                },
+              ),
+            ),
+            const Padding(padding: EdgeInsets.only(bottom: 10.0)),
             ElevatedButton(
               onPressed: () => _Download(context),
-              child: const Text('Download'),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)
+                  )
+              ),
+              child: const Text(
+                  'Download',
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Robot",
+                  ),
+              ),
             ),
           ],
         ),
@@ -63,35 +112,33 @@ class _DownloadPageState extends State<DownloadPage> {
       var fileStream = file.openWrite();
 
       // Pipe all the content of the stream into the file.
-      //await stream.pipe(fileStream);
-      await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
+      await yt.videos.streamsClient.get(streamInfo).pipe(fileStream).then((_) {
+        msg = 'Downloaded!';
+        // ignore: use_build_context_synchronously
+        showDialog(
+            context: context,
+            builder: (context) {
+            return AlertDialog(
+              title: const Text('AlertDialogTitle'),
+              content: Text(msg),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'OK'),
+                  child: const Text('OK'),
+                ),
+              ],
+             );
+            }
+        );
+      });
 
       // Close the file.
       await fileStream.flush();
       await fileStream.close();
-
-      String msg = 'Downloaded!!';
     } catch (e) {
       String msg = e.toString();
     } finally {
       yt.close();
     }
-
-    // ignore: use_build_context_synchronously
-    await showDialog(
-      context: context,
-      builder: (context) {
-         return AlertDialog(
-          title: const Text('AlertDialogTitle'),
-          content: const Text('Description'),
-          actions: <Widget>[
-            TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
-                child: const Text('OK'),
-            ),
-          ],
-        );
-      }
-    );
   }
 }
