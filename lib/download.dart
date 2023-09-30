@@ -42,7 +42,6 @@ class _DownloadPageState extends State<DownloadPage> {
   // ignore: non_constant_identifier_names
   Future<void> _Download(BuildContext context) async {
     final YoutubeExplode yt = YoutubeExplode();
-    String msg = '';
 
     try {
       Video video = await yt.videos.get(url);
@@ -53,8 +52,6 @@ class _DownloadPageState extends State<DownloadPage> {
       // Get muxed stream
       final StreamInfo streamInfo = manifest.muxed.withHighestBitrate();
 
-      // Get the actual stream
-      final stream = yt.videos.streamsClient.get(streamInfo);
       // File Extension
       final ext = streamInfo.container.name;
       final Directory directory = await getApplicationDocumentsDirectory();
@@ -73,9 +70,9 @@ class _DownloadPageState extends State<DownloadPage> {
       await fileStream.flush();
       await fileStream.close();
 
-      msg = 'Downloaded!!';
+      String msg = 'Downloaded!!';
     } catch (e) {
-      msg = e.toString();
+      String msg = e.toString();
     } finally {
       yt.close();
     }

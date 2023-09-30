@@ -37,8 +37,16 @@ class _ProgressTextState extends State<ProgressText> {
   @override
   Widget build(BuildContext context) {
     // 現在の値を元にUIを表示する
-    final String position = widget.controller.value.position.toString();
-    final String duration = widget.controller.value.duration.toString();
+    final String position = durationParse(widget.controller.value.position);
+    final String duration = durationParse(widget.controller.value.duration);
     return Text('$position / $duration');
+  }
+
+  String durationParse(Duration value) {
+    int hours = value.inHours;
+    int minutes = value.inMinutes % 60;
+    int seconds = value.inSeconds & 60;
+    String time = '${hours.toString()}:${minutes.toString()}:${seconds.toString()}';
+    return time;
   }
 }

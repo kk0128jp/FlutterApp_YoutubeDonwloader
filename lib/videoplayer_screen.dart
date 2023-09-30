@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 import 'progress_text.dart';
+import 'package:path/path.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final VideoPlayerController controller;
@@ -43,6 +44,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text(basename(_mp4Path).replaceAll('.mp4', '')),
           _controller.value.isInitialized ? AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
               child: VideoPlayer(_controller),
