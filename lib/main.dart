@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'videolist.dart';
 import 'download.dart';
 
@@ -36,6 +37,12 @@ class _HomePageState extends State<HomePage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    checkAndCreateFolder();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
@@ -69,5 +76,20 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  Future<void> checkAndCreateFolder() async {
+    final directory = await getApplicationDocumentsDirectory();
+    const thumbnailsFolderName = 'thumbnails';
+    const videosFolderName = 'videos';
+
+    final thumbnailsFolder = Directory('${directory.path}/$thumbnailsFolderName');
+    final videosFolder = Directory('${directory.path}/$videosFolderName');
+    final isExist = await thumbnailsFolder.exists();
+
+    if (!isExist) {
+      await thumbnailsFolder.create(recursive: true);
+      await videosFolder.create(recursive: true);
+    }
   }
 }
