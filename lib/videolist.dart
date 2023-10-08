@@ -38,6 +38,7 @@ class _VideoListPageState extends State<VideoListPage> {
     // VideoPlayerControllerを破棄
     _controller.dispose();
     _database.close();
+    _openDatabase();
     super.dispose();
   }
 
@@ -72,7 +73,18 @@ class _VideoListPageState extends State<VideoListPage> {
                     child: FutureBuilder<File>(
                       future: _loadThumbNail(index),
                       builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-                        return Image.file(snapshot.requireData);
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          // データが読み込み中の場合の表示
+                          return const CircularProgressIndicator();
+                          //return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
+                        } else if (!snapshot.hasData) {
+                          return const CircularProgressIndicator();
+                          //return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
+                        } else if (snapshot.hasError) {
+                          return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
+                        } else {
+                          return Image.file(snapshot.requireData);
+                        }
                       },
                     ),
                 ),
