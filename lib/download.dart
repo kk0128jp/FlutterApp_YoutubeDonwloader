@@ -223,7 +223,6 @@ class _DownloadPageState extends State<DownloadPage> {
   // DBにチャンネル名、動画タイトル、動画ファイル名、サムネイルファイル名を保存
   Future<void> _insert(String channelName, String videoTitle, String videoFileName, String thumbnailFileName) async {
     try{
-      debugPrint('チャンネル名: $channelName, 動画タイトル: $videoTitle, 動画ファイル名: $videoFileName, サムネイルファイル名: $thumbnailFileName');
       await _database.transaction((txn) async {
         await txn.rawInsert('INSERT INTO videosMeta(channelName, videoTitle, videoFileName, thumbnailFileName) VALUES(?, ?, ?, ?)', [channelName, videoTitle, videoFileName, thumbnailFileName]);
       });

@@ -117,6 +117,8 @@ class _VideoListPageState extends State<VideoListPage> {
                     switch (value) {
                       case  'share':
                       case 'delete':
+                        _deleteVideo(index, fileName);
+                        break;
                     }
                   },
                 ),
@@ -173,5 +175,27 @@ class _VideoListPageState extends State<VideoListPage> {
     );
 
     return File('$_thumbNailDirPath/${records[index]['thumbnailFileName']}');
+  }
+
+  Future<void> _deleteVideo(int index, String fileName) async {
+    // 該当動画のサムネイルファイル削除
+    File thumbNailPath = await _loadThumbNail(index);
+    thumbNailPath.delete();
+
+    // 該当動画ファイルの削除
+    Directory appDocumentsDir = await getApplicationDocumentsDirectory();
+    String appDirPath = appDocumentsDir.path;
+    String mp4DirectoryPath = '$appDirPath/videos';
+    File videoPath = File('$mp4DirectoryPath/$fileName');
+    videoPath.delete();
+
+    // DBから該当の動画情報行を削除
+    await _database.delete("videosMeta",
+        where: "videoFileName=?",
+        whereArgs: [fileName]
+    );
+
+    // Videosスクリーンを再ロード
+    _loadVideos();
   }
 }
