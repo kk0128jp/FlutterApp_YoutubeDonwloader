@@ -39,7 +39,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Player'),
+        title: const Text(
+            'Player',
+            style: TextStyle(
+              fontFamily: "Robot",
+              color: Colors.black,
+            ),
+        ),
+        elevation: 2.0,
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(
+            color: Colors.red
+        ),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
