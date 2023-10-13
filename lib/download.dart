@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:path_provider/path_provider.dart';
@@ -192,7 +194,6 @@ class _DownloadPageState extends State<DownloadPage> {
       // Pipe all the content of the stream into the file.
       await yt.videos.streamsClient.get(streamInfo).pipe(fileStream).then((_) {
         msg = 'Downloaded!';
-        // ignore: use_build_context_synchronously
         showDialog(
             context: context,
             builder: (context) {
@@ -215,6 +216,7 @@ class _DownloadPageState extends State<DownloadPage> {
       await fileStream.close();
     } catch (e) {
       String msg = e.toString();
+      debugPrint(msg);
     } finally {
       yt.close();
     }

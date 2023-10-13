@@ -11,8 +11,7 @@ class VideoPlayerScreen extends StatefulWidget {
   VideoPlayerScreen({super.key, required this.controller, required this.mp4Path});
   
   @override
-  // ignore: library_private_types_in_public_api
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
@@ -73,21 +72,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     // 動画を最初から再生
                     _controller.seekTo(Duration.zero).then((_) => _controller.play())
                   },
-                  icon: Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh),
               ),
               IconButton(
                   onPressed: () => {
                     // 動画を再生
                     _controller.play()
                   },
-                  icon: Icon(Icons.play_arrow),
+                  icon: const Icon(Icons.play_arrow),
               ),
               IconButton(
                   onPressed: () => {
                     // 動画を一時停止
                     _controller.pause()
                   },
-                  icon: Icon(Icons.pause),
+                  icon: const Icon(Icons.pause),
               ),
             ],
           ),
