@@ -2,17 +2,17 @@
 
 ## Description
 
-Can download videos from youtube and play offline
+Download videos from youtube and play offline
 
 ## Demo
 
 ## Requirement
 
-- Android >= 9
+- Android >= 9.0
 
 ## Installation
 
-Can download apk file from apk folder
+Download app-release.apk file from apk folder
 
 ## Author
 

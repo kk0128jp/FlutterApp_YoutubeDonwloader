@@ -20,6 +20,7 @@ class _DownloadPageState extends State<DownloadPage> {
   String url = '';
   String msg = '';
   late Database _database;
+  final _textEditController = TextEditingController();
 
   @override
   void initState() {
@@ -74,6 +75,7 @@ class _DownloadPageState extends State<DownloadPage> {
             SizedBox(
               width: 350,
               child: TextField(
+                controller: _textEditController,
                 decoration: const InputDecoration(
                   labelText: 'Youtube URL',
                   labelStyle: TextStyle(
@@ -183,41 +185,64 @@ class _DownloadPageState extends State<DownloadPage> {
       await thumbNailFile.create();
       await thumbNailFile.writeAsBytes(res.bodyBytes);
 
-      String videoFileName = '$title.$ext';
+      // 動画タイトルの正規化をしてファイル名とする
+      String videoFileName = '$title.$ext'
+          .replaceAll(r'\', '')
+          .replaceAll('/', '')
+          .replaceAll('*', '')
+          .replaceAll('?', '')
+          .replaceAll('"', '')
+          .replaceAll('<', '')
+          .replaceAll('>', '')
+          .replaceAll('|', '');
+
       // Open a file for writing.
       File file = File('$path/videos/$videoFileName');
       var fileStream = file.openWrite();
 
+      // Pipe all the content of the stream into the file.
+      await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
+
+      // FutureBuilder(
+      //   future: await yt.videos.streamsClient.get(streamInfo).pipe(fileStream),
+      //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       // データを取得中の場合、プログレスバーを表示
+      //       return CircularProgressIndicator();
+      //     } else {
+      //       return Text('');
+      //     }
+      //   },
+      // );
+
       // DBに保存
       await _insert(channelName, title, videoFileName, thumbnailFileName);
 
-      // Pipe all the content of the stream into the file.
-      await yt.videos.streamsClient.get(streamInfo).pipe(fileStream).then((_) {
+      // Close the file.
+      await fileStream.flush();
+      await fileStream.close().then((_) {
         msg = 'Downloaded!';
         showDialog(
             context: context,
             builder: (context) {
-            return AlertDialog(
-              title: const Text('AlertDialogTitle'),
-              content: Text(msg),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'OK'),
-                  child: const Text('OK'),
-                ),
-              ],
-             );
+              return AlertDialog(
+                title: const Text('AlertDialogTitle'),
+                content: Text(msg),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'OK'),
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
             }
         );
       });
-
-      // Close the file.
-      await fileStream.flush();
-      await fileStream.close();
     } catch (e) {
       String msg = e.toString();
       debugPrint(msg);
     } finally {
+      _textEditController.clear();
       yt.close();
     }
   }

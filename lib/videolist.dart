@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:youtube_downloader_flutterapp/videoplayer_screen.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:share_plus/share_plus.dart';
 
 class VideoListPage extends StatefulWidget {
   const VideoListPage({super.key});
@@ -70,20 +71,18 @@ class _VideoListPageState extends State<VideoListPage> {
                 leading: SizedBox(
                     width: 60.0,
                     height: 100.0,
-                    child: FutureBuilder<File>(
+                    child: FutureBuilder(
                       future: _loadThumbNail(index),
                       builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
-                          // データが読み込み中の場合の表示
+                          // データが読み込み中またはデータを取得していないときの表示
                           return const CircularProgressIndicator();
-                          //return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
-                        } else if (!snapshot.hasData) {
-                          return const CircularProgressIndicator();
-                          //return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
                         } else if (snapshot.hasError) {
                           return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
-                        } else {
+                        } else if (snapshot.connectionState == ConnectionState.done) {
                           return Image.file(snapshot.requireData);
+                        } else {
+                          return const CircularProgressIndicator();
                         }
                       },
                     ),
