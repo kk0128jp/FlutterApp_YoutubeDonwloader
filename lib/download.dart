@@ -92,7 +92,7 @@ class _DownloadPageState extends State<DownloadPage> {
             ),
             const Padding(padding: EdgeInsets.only(bottom: 10.0)),
             ElevatedButton(
-              onPressed: () => _download(context),
+              onPressed: () => showFutureLoader(context, _download(context)),
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
@@ -149,7 +149,7 @@ class _DownloadPageState extends State<DownloadPage> {
   }
 
   // チャンネル名、動画タイトル、動画ファイル、サムネイルをダウンロード
-  Future<void> _download(BuildContext context) async {
+  Future<bool> _download(BuildContext context) async {
     final YoutubeExplode yt = YoutubeExplode();
 
     try {
@@ -199,37 +199,14 @@ class _DownloadPageState extends State<DownloadPage> {
       var fileStream = file.openWrite();
 
       // Pipe all the content of the stream into the file.
-      // await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
-
-      FutureBuilder(
-        future: _saveAndClose(yt, streamInfo, fileStream, channelName, title, videoFileName, thumbnailFileName),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // 処理待ち中、プログレスバーを表示
-            return const CircularProgressIndicator();
-          } if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          } else {
-            return AlertDialog(
-              title: const Text('aaa'),
-              content: const Text('AAA'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'OK'),
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          }
-        },
-      );
+      await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
 
       // DBに保存
-      // await _insert(channelName, title, videoFileName, thumbnailFileName);
-
-      // Close the file.
-      // await fileStream.flush();
-      // await fileStream.close().then((_) {
+      await _insert(channelName, title, videoFileName, thumbnailFileName);
+      //
+      // // Close the file.
+      await fileStream.flush();
+      await fileStream.close();//.then((_) {
       //   msg = 'Downloaded!';
       //   showDialog(
       //       context: context,
@@ -247,9 +224,11 @@ class _DownloadPageState extends State<DownloadPage> {
       //       }
       //   );
       // });
+      return true;
     } catch (e) {
-      String msg = e.toString();
-      debugPrint(msg);
+      debugPrint('download error');
+      debugPrint(e.toString());
+      return false;
     } finally {
       _textEditController.clear();
       yt.close();
@@ -267,11 +246,34 @@ class _DownloadPageState extends State<DownloadPage> {
     }
   }
 
-  // 動画、DBへの保存とclose処理
-  Future<void> _saveAndClose(YoutubeExplode yt, streamInfo, fileStream, String channelName, String title, String videoFileName, String thumbnailFileName) async {
-    await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
-    await _insert(channelName, title, videoFileName, thumbnailFileName);
-    await fileStream.flush();
-    await fileStream.close();
+  // ダウンロード中はダイアログで待機する
+  void showFutureLoader(BuildContext context, Future future) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Downloading'),
+            content: FutureBuilder(
+                future: future,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return  TextButton(
+                      onPressed: () => Navigator.pop(context, 'error'),
+                      child: const Text('have error'),
+                    );
+                  } else {
+                    return TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK'),
+                    );
+                  }
+                }
+            ),
+          );
+        },
+    );
   }
 }
