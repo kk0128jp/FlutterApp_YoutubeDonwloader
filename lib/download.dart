@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:path_provider/path_provider.dart';
@@ -201,43 +199,54 @@ class _DownloadPageState extends State<DownloadPage> {
       var fileStream = file.openWrite();
 
       // Pipe all the content of the stream into the file.
-      await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
+      // await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
 
-      // FutureBuilder(
-      //   future: await yt.videos.streamsClient.get(streamInfo).pipe(fileStream),
-      //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       // データを取得中の場合、プログレスバーを表示
-      //       return CircularProgressIndicator();
-      //     } else {
-      //       return Text('');
-      //     }
-      //   },
-      // );
+      FutureBuilder(
+        future: _saveAndClose(yt, streamInfo, fileStream, channelName, title, videoFileName, thumbnailFileName),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // 処理待ち中、プログレスバーを表示
+            return const CircularProgressIndicator();
+          } if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          } else {
+            return AlertDialog(
+              title: const Text('aaa'),
+              content: const Text('AAA'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'OK'),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          }
+        },
+      );
 
       // DBに保存
-      await _insert(channelName, title, videoFileName, thumbnailFileName);
+      // await _insert(channelName, title, videoFileName, thumbnailFileName);
 
       // Close the file.
-      await fileStream.flush();
-      await fileStream.close().then((_) {
-        msg = 'Downloaded!';
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('AlertDialogTitle'),
-                content: Text(msg),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'OK'),
-                    child: const Text('OK'),
-                  ),
-                ],
-              );
-            }
-        );
-      });
+      // await fileStream.flush();
+      // await fileStream.close().then((_) {
+      //   msg = 'Downloaded!';
+      //   showDialog(
+      //       context: context,
+      //       builder: (context) {
+      //         return AlertDialog(
+      //           title: const Text('AlertDialogTitle'),
+      //           content: Text(msg),
+      //           actions: <Widget>[
+      //             TextButton(
+      //               onPressed: () => Navigator.pop(context, 'OK'),
+      //               child: const Text('OK'),
+      //             ),
+      //           ],
+      //         );
+      //       }
+      //   );
+      // });
     } catch (e) {
       String msg = e.toString();
       debugPrint(msg);
@@ -256,5 +265,13 @@ class _DownloadPageState extends State<DownloadPage> {
     } catch (e) {
       debugPrint(e.toString());
     }
+  }
+
+  // 動画、DBへの保存とclose処理
+  Future<void> _saveAndClose(YoutubeExplode yt, streamInfo, fileStream, String channelName, String title, String videoFileName, String thumbnailFileName) async {
+    await yt.videos.streamsClient.get(streamInfo).pipe(fileStream);
+    await _insert(channelName, title, videoFileName, thumbnailFileName);
+    await fileStream.flush();
+    await fileStream.close();
   }
 }
