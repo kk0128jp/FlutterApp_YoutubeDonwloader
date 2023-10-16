@@ -78,7 +78,9 @@ class _VideoListPageState extends State<VideoListPage> {
                           // データが読み込み中またはデータを取得していないときの表示
                           return const CircularProgressIndicator();
                         } else if (snapshot.hasError) {
-                          return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
+                          debugPrint(snapshot.error.toString());
+                          return const CircularProgressIndicator();
+                          //return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
                         } else if (snapshot.connectionState == ConnectionState.done) {
                           return Image.file(snapshot.requireData);
                         } else {
@@ -90,16 +92,16 @@ class _VideoListPageState extends State<VideoListPage> {
                 title: Text(fileName.replaceAll('.mp4', '')),
                 trailing: PopupMenuButton(
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'share',
-                      child: Row(
-                        children: [
-                          Icon(Icons.share),
-                          SizedBox(width: 8),
-                          Text('share'),
-                        ],
-                      ),
-                    ),
+                    // const PopupMenuItem(
+                    //   value: 'share',
+                    //   child: Row(
+                    //     children: [
+                    //       Icon(Icons.share),
+                    //       SizedBox(width: 8),
+                    //       Text('share'),
+                    //     ],
+                    //   ),
+                    // ),
                     const PopupMenuItem(
                         value: 'delete',
                         child: Row(
@@ -114,7 +116,7 @@ class _VideoListPageState extends State<VideoListPage> {
                   // メニュー選択時の処理
                   onSelected: (value) {
                     switch (value) {
-                      case  'share':
+                      //case  'share':
                       case 'delete':
                         _deleteVideo(index, fileName);
                         break;
