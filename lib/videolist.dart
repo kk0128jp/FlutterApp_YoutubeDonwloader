@@ -87,7 +87,7 @@ class _VideoListPageState extends State<VideoListPage> {
                       },
                     ),
                 ),
-                title: Text(fileName),//.replaceAll('.mp4', '')),
+                title: Text(fileName.replaceAll('.mp4', '')),
                 trailing: PopupMenuButton(
                   itemBuilder: (context) => [
                     const PopupMenuItem(
