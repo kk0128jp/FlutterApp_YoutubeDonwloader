@@ -72,7 +72,7 @@ class _VideoListPageState extends State<VideoListPage> {
                     width: 60.0,
                     height: 100.0,
                     child: FutureBuilder(
-                      future: _loadThumbNail(index),
+                      future: _loadThumbNail(fileName),
                       builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           // データが読み込み中またはデータを取得していないときの表示
@@ -118,7 +118,7 @@ class _VideoListPageState extends State<VideoListPage> {
                     switch (value) {
                       //case  'share':
                       case 'delete':
-                        _deleteVideo(index, fileName);
+                        _deleteVideo(fileName);
                         break;
                     }
                   },
@@ -171,18 +171,19 @@ class _VideoListPageState extends State<VideoListPage> {
     );
   }
 
-  Future<File> _loadThumbNail(int index) async {
+  Future<File> _loadThumbNail(String videoFileName) async {
     List<Map<String, dynamic>> records = await _database.query(
         _tableName,
         columns: ['thumbnailFileName'],
+        where: "videoFileName=?",
+      whereArgs: [videoFileName],
     );
-
-    return File('$_thumbNailDirPath/${records[index]['thumbnailFileName']}');
+    return File('$_thumbNailDirPath/${records[0]['thumbnailFileName']}');
   }
 
-  Future<void> _deleteVideo(int index, String fileName) async {
+  Future<void> _deleteVideo(String fileName) async {
     // 該当動画のサムネイルファイル削除
-    File thumbNailPath = await _loadThumbNail(index);
+    File thumbNailPath = await _loadThumbNail(fileName);
     thumbNailPath.delete();
 
     // 該当動画ファイルの削除
