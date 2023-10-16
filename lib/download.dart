@@ -163,7 +163,15 @@ class _DownloadPageState extends State<DownloadPage> {
       // サムネイルURL
       String thumbnailUrl = thumbnails.highResUrl;
       // サムネイルファイル名
-      String thumbnailFileName = '$title-${basename(thumbnailUrl)}';
+      String thumbnailFileName = '$title-${basename(thumbnailUrl)}'
+          .replaceAll(r'\', '')
+          .replaceAll('/', '')
+          .replaceAll('*', '')
+          .replaceAll('?', '')
+          .replaceAll('"', '')
+          .replaceAll('<', '')
+          .replaceAll('>', '')
+          .replaceAll('|', '');
 
       final StreamManifest manifest = await yt.videos.streamsClient.getManifest(url);
 
@@ -206,24 +214,7 @@ class _DownloadPageState extends State<DownloadPage> {
       //
       // // Close the file.
       await fileStream.flush();
-      await fileStream.close();//.then((_) {
-      //   msg = 'Downloaded!';
-      //   showDialog(
-      //       context: context,
-      //       builder: (context) {
-      //         return AlertDialog(
-      //           title: const Text('AlertDialogTitle'),
-      //           content: Text(msg),
-      //           actions: <Widget>[
-      //             TextButton(
-      //               onPressed: () => Navigator.pop(context, 'OK'),
-      //               child: const Text('OK'),
-      //             ),
-      //           ],
-      //         );
-      //       }
-      //   );
-      // });
+      await fileStream.close();
       return true;
     } catch (e) {
       debugPrint('download error');
@@ -253,21 +244,36 @@ class _DownloadPageState extends State<DownloadPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Downloading'),
+            title: const Text('Downloading...'),
             content: FutureBuilder(
                 future: future,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const SizedBox(
+                      width: 50.0,
+                      height: 50.0,
+                      child: CircularProgressIndicator(),
+                    );
                   } else if (snapshot.hasError) {
                     return  TextButton(
-                      onPressed: () => Navigator.pop(context, 'error'),
+                      onPressed: () => Navigator.pop(context),
                       child: const Text('have error'),
                     );
                   } else {
-                    return TextButton(
-                      onPressed: () => Navigator.pop(context, 'OK'),
-                      child: const Text('OK'),
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Success!!'),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                          'Done',
+                          style: TextStyle(
+                            fontFamily: "Robot",
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   }
                 }

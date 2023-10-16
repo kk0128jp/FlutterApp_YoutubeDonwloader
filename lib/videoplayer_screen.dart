@@ -7,8 +7,9 @@ import 'package:path/path.dart';
 class VideoPlayerScreen extends StatefulWidget {
   final VideoPlayerController controller;
   String mp4Path;
+  String channelName;
 
-  VideoPlayerScreen({super.key, required this.controller, required this.mp4Path});
+  VideoPlayerScreen({super.key, required this.controller, required this.mp4Path, required this.channelName});
   
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -17,11 +18,13 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
   String _mp4Path = '';
+  String _channelName = '';
 
   @override
   void initState() {
     super.initState();
     _mp4Path = widget.mp4Path;
+    _channelName = widget.channelName;
     _controller = VideoPlayerController.file(File(_mp4Path))
       ..initialize().then((_) {
         setState(() {});
@@ -54,6 +57,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          //Text(_channelName),
           Text(basename(_mp4Path).replaceAll('.mp4', '')),
           _controller.value.isInitialized ? AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
@@ -93,5 +97,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         ],
       ),
     );
+  }
+
+  String _getChannelName(String mp4Path) {
+    return mp4Path;
   }
 }

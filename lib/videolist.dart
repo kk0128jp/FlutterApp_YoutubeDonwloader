@@ -162,7 +162,7 @@ class _VideoListPageState extends State<VideoListPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => VideoPlayerScreen(controller: _controller, mp4Path: videoPath),
+        builder: (BuildContext context) => VideoPlayerScreen(controller: _controller, mp4Path: videoPath, channelName: 'A'),
       ),
     );
   }
