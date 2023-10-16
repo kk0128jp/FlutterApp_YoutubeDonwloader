@@ -87,7 +87,7 @@ class _VideoListPageState extends State<VideoListPage> {
                       },
                     ),
                 ),
-                title: Text(fileName),
+                title: Text(fileName),//.replaceAll('.mp4', '')),
                 trailing: PopupMenuButton(
                   itemBuilder: (context) => [
                     const PopupMenuItem(
@@ -158,11 +158,13 @@ class _VideoListPageState extends State<VideoListPage> {
     _thumbNailDirPath = thumbnailDirPath;
   }
 
-  void _playVideo(BuildContext context, String videoPath) {
+  void _playVideo(BuildContext context, String videoPath) async {
+    String channelName = await _getChannelName(videoPath);
+    // ignore: use_build_context_synchronously
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => VideoPlayerScreen(controller: _controller, mp4Path: videoPath, channelName: 'A'),
+        builder: (BuildContext context) => VideoPlayerScreen(controller: _controller, mp4Path: videoPath, channelName: channelName),
       ),
     );
   }
@@ -196,5 +198,16 @@ class _VideoListPageState extends State<VideoListPage> {
 
     // Videosスクリーンを再ロード
     _loadVideos();
+  }
+
+  Future<String> _getChannelName(String mp4Path) async {
+    String videoFileName = basename(mp4Path);
+    List<Map<String, dynamic>> result = await _database.query(
+        _tableName,
+        columns: ["channelName"],
+        where: "videoFilename=?",
+        whereArgs: [videoFileName]
+    );
+    return result[0]["channelName"];
   }
 }

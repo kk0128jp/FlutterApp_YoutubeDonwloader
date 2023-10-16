@@ -57,8 +57,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          //Text(_channelName),
-          Text(basename(_mp4Path).replaceAll('.mp4', '')),
+          Row(
+            children: [
+              Flexible(
+                  flex: 2,
+                  child: Text("【$_channelName】")
+              ),
+              Flexible(
+                  flex: 3,
+                  child: Text(
+                      basename(_mp4Path).replaceAll('.mp4', '')
+                  )
+              ),
+            ],
+          ),
           _controller.value.isInitialized ? AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
               child: VideoPlayer(_controller),
@@ -97,9 +109,5 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         ],
       ),
     );
-  }
-
-  String _getChannelName(String mp4Path) {
-    return mp4Path;
   }
 }
