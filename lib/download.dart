@@ -250,7 +250,7 @@ class _DownloadPageState extends State<DownloadPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const SizedBox(
-                      width: 50.0,
+                      width: 0.0,
                       height: 50.0,
                       child: CircularProgressIndicator(),
                     );
@@ -263,12 +263,22 @@ class _DownloadPageState extends State<DownloadPage> {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('Success!!'),
+                        const Text(
+                          'Success!!',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: "Robot",
+                          ),
+                        ),
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: const Text(
                           'Done',
                           style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w400,
                             fontFamily: "Robot",
                             ),
                           ),
