@@ -78,9 +78,7 @@ class _VideoListPageState extends State<VideoListPage> {
                           // データが読み込み中またはデータを取得していないときの表示
                           return const CircularProgressIndicator();
                         } else if (snapshot.hasError) {
-                          debugPrint(snapshot.error.toString());
-                          return const CircularProgressIndicator();
-                          //return Image.file(File('/data/data/com.example.youtube_downloader_flutterapp/app_flutter/thumb-loading-768x413.png'));
+                          return Image.asset('images/thumb-loading-768x413.png');
                         } else if (snapshot.connectionState == ConnectionState.done) {
                           return Image.file(snapshot.requireData);
                         } else {
