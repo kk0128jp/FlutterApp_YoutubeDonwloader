@@ -62,68 +62,78 @@ class _VideoListPageState extends State<VideoListPage> {
           itemBuilder: (BuildContext context, index) {
             FileSystemEntity videoFile = videos[index]; // FileSystemEntityを取得
             String fileName = videoFile.uri.pathSegments.last; // ファイル名を取得
-            return Card(
-              clipBehavior: Clip.antiAlias,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: ListTile(
-                leading: SizedBox(
-                    width: 60.0,
-                    height: 100.0,
-                    child: FutureBuilder(
-                      future: _loadThumbNail(fileName),
-                      builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          // データが読み込み中またはデータを取得していないときの表示
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Image.asset('images/thumb-loading-768x413.png');
-                        } else if (snapshot.connectionState == ConnectionState.done) {
-                          return Image.file(snapshot.requireData);
-                        } else {
-                          return const CircularProgressIndicator();
-                        }
-                      },
-                    ),
+            return SizedBox(
+              height: 90.0,
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                title: Text(fileName.replaceAll('.mp4', '')),
-                trailing: PopupMenuButton(
-                  itemBuilder: (context) => [
-                    // const PopupMenuItem(
-                    //   value: 'share',
-                    //   child: Row(
-                    //     children: [
-                    //       Icon(Icons.share),
-                    //       SizedBox(width: 8),
-                    //       Text('share'),
-                    //     ],
-                    //   ),
-                    // ),
-                    const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete),
-                            SizedBox(width: 8),
-                            Text('delete'),
-                          ],
-                        )
-                    ),
-                  ],
-                  // メニュー選択時の処理
-                  onSelected: (value) {
-                    switch (value) {
-                      //case  'share':
-                      case 'delete':
-                        _deleteVideo(fileName);
-                        break;
-                    }
+                child: ListTile(
+                  leading: SizedBox(
+                      width: 60.0,
+                      height: 100.0,
+                      child: FutureBuilder(
+                        future: _loadThumbNail(fileName),
+                        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            // データが読み込み中またはデータを取得していないときの表示
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Image.asset('images/thumb-loading-768x413.png');
+                          } else if (snapshot.connectionState == ConnectionState.done) {
+                            return Image.file(snapshot.requireData);
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
+                      ),
+                  ),
+                  title: Text(
+                      fileName.replaceAll('.mp4', ''),
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Robot",
+                      ),
+                  ),
+                  trailing: PopupMenuButton(
+                    itemBuilder: (context) => [
+                      // const PopupMenuItem(
+                      //   value: 'share',
+                      //   child: Row(
+                      //     children: [
+                      //       Icon(Icons.share),
+                      //       SizedBox(width: 8),
+                      //       Text('share'),
+                      //     ],
+                      //   ),
+                      // ),
+                      const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete),
+                              SizedBox(width: 8),
+                              Text('delete'),
+                            ],
+                          )
+                      ),
+                    ],
+                    // メニュー選択時の処理
+                    onSelected: (value) {
+                      switch (value) {
+                        //case  'share':
+                        case 'delete':
+                          _deleteVideo(fileName);
+                          break;
+                      }
+                    },
+                  ),
+                  onTap: () => {
+                    _playVideo(context, videoFile.path)
                   },
                 ),
-                onTap: () => {
-                  _playVideo(context, videoFile.path)
-                },
               ),
             );
           }
