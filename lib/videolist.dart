@@ -79,8 +79,14 @@ class _VideoListPageState extends State<VideoListPage> {
                             // データが読み込み中またはデータを取得していないときの表示
                             return const CircularProgressIndicator();
                           } else if (snapshot.hasError) {
-                            debugPrint(snapshot.error.toString());
-                            return Image.asset('images/thumb-loading-768x413.png');
+                            // build完了後にコールバック
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              setState(() {
+
+                              });
+                            });
+                            return const CircularProgressIndicator();
+                            //return Image.asset('images/thumb-loading-768x413.png');
                           } else if (snapshot.connectionState == ConnectionState.done) {
                             return Image.file(snapshot.requireData);
                           } else {
